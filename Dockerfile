@@ -1,29 +1,24 @@
 FROM ubuntu:24.04
 
-# Instala dependências + Node.js como root
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Sao_Paulo
+
+# Instala dependências + Node.js 22
 RUN apt-get update && apt-get install -y \
     curl bash git ca-certificates \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala OpenClaw como root (precisa de sudo/root para npm global)
-RUN curl -fsSL https://openclaw.ai/install.sh | bash
+# Instala OpenClaw via npm (sem setup interativo)
+RUN npm install -g @openclaw/openclaw
 
-ENV PATH="/root/.openclaw/bin:/root/.npm-global/bin:$PATH"
+WORKDIR /root/.openclaw
 
-# Cria usuário e copia instalação
-RUN useradd -m -s /bin/bash openclaw
-WORKDIR /home/openclaw
+# Copia configuração e skill
+COPY openclaw.json /root/.openclaw/openclaw.json
+COPY skill/ /root/.openclaw/skills/workspace/ipem-frota/
 
-# Copia a skill customizada
-COPY --chown=openclaw:openclaw skill/ /home/openclaw/.openclaw/skills/workspace/ipem-frota/
-
-# Copia configuração inicial (será sobrescrita por env vars)
-COPY --chown=openclaw:openclaw openclaw.json /home/openclaw/.openclaw/openclaw.json
-
-# Porta do WebChat (dashboard interno)
 EXPOSE 3000
 
-# Inicia o gateway
 CMD ["openclaw", "gateway", "start", "--foreground"]
