@@ -1,22 +1,20 @@
 FROM ubuntu:24.04
 
-# Dependências do sistema
+# Instala dependências + Node.js como root
 RUN apt-get update && apt-get install -y \
-    curl \
-    bash \
-    git \
-    ca-certificates \
+    curl bash git ca-certificates \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Cria usuário dedicado (não rodar como root)
-RUN useradd -m -s /bin/bash openclaw
-USER openclaw
-WORKDIR /home/openclaw
-
-# Instala OpenClaw
+# Instala OpenClaw como root (precisa de sudo/root para npm global)
 RUN curl -fsSL https://openclaw.ai/install.sh | bash
 
-ENV PATH="/home/openclaw/.openclaw/bin:$PATH"
+ENV PATH="/root/.openclaw/bin:/root/.npm-global/bin:$PATH"
+
+# Cria usuário e copia instalação
+RUN useradd -m -s /bin/bash openclaw
+WORKDIR /home/openclaw
 
 # Copia a skill customizada
 COPY --chown=openclaw:openclaw skill/ /home/openclaw/.openclaw/skills/workspace/ipem-frota/
