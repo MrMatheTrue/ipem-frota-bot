@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ipem-frota-bot
+    runtime: docker
+    plan: starter          # ~$7/mês — sem sleep (free dorme após 15min inativo)
+    healthCheckPath: /health
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false        # preencher manualmente no dashboard Render
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: IPEM_API_URL
+        sync: false        # ex: https://sua-api.ec2.amazonaws.com
+      - key: IPEM_MATRICULA
+        sync: false
+      - key: IPEM_SENHA
+        sync: false

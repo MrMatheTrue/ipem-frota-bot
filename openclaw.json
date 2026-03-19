@@ -1,0 +1,39 @@
+{
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0"
+  },
+  "agent": {
+    "name": "IPEM Frota Bot",
+    "persona": "Você é o assistente de gestão de frota da IPEM-SJC. Responda sempre em português brasileiro. Seja direto e objetivo. Confirme dados antes de executar ações no sistema.",
+    "model": "gemini-2.0-flash",
+    "provider": "google"
+  },
+  "models": {
+    "google": {
+      "apiKey": "${GEMINI_API_KEY}",
+      "model": "gemini-2.0-flash"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "${TELEGRAM_BOT_TOKEN}",
+      "allowedUsers": []
+    }
+  },
+  "tools": {
+    "allow": ["exec", "web_fetch"],
+    "exec": {
+      "allow": ["curl", "bash"]
+    }
+  },
+  "skills": {
+    "workspace": ["ipem-frota"]
+  },
+  "env": {
+    "IPEM_API_URL": "${IPEM_API_URL}",
+    "IPEM_MATRICULA": "${IPEM_MATRICULA}",
+    "IPEM_SENHA": "${IPEM_SENHA}"
+  }
+}
